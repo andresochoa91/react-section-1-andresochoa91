@@ -1,16 +1,8 @@
 import React, { Component } from 'react';
 import styled from "styled-components";
-import Square from './Square';
-// import { Button } from 'react-bootstrap';
+import { Square, Col} from './Square';
 
 //Styled components
-export const Col = styled.div`
-  border: solid 1px #000;
-  width: 33%;
-  height: auto;
-  margin: 1px;
-  cursor: pointer;
-`;
 
 const Content= styled.div`
   ${Col}:hover {
@@ -21,10 +13,6 @@ const Content= styled.div`
   width: 150px; 
 `;
 
-// const Row = styled.div`
-//   display: flex;
-// `;
-
 const Button = styled.button`
   background-color: ${(props) => props.primary};
   border: none;
@@ -34,7 +22,6 @@ const Button = styled.button`
 `;
 
 class Cell extends Component {
-
   state = {
     color: "#f00",
     count: 0,
@@ -42,11 +29,17 @@ class Cell extends Component {
     board: ["", "", "", "", "", "", "", "", ""],
     player: "Red",
   }
-
+  
   changeColor = (event) => {
-    if (!event.target.style.backgroundColor && this.state.playing === true) {
-      event.target.style.backgroundColor = this.state.color;
-      if (this.state.color === "#f00") {
+
+    const { color, playing, board } = this.state;
+
+    if (!board[event.target.id] && playing === true) {    
+      const newBoard = [...board];
+      newBoard[event.target.id] = color;
+      this.setState({ board: newBoard });
+
+      if (color === "#f00") {
         this.setState({ 
           color: "#0f0",
           player: "Red" 
@@ -57,15 +50,15 @@ class Cell extends Component {
           player: "Green"
         })
       }
-      this.setState({ board: this.state.board.map((sq, id) => (id === Number(event.target.id) ? this.state.color : sq))})
       this.setState({ count: this.state.count + 1 });
     }
   }
 
   componentDidUpdate () {
-    if (this.conditions() || this.state.count === 9) {
+    const { count, playing, player} = this.state;
+    if ((this.conditions() || count === 9) && playing === true) {
       if (this.conditions()) {
-        alert(`${this.state.player} wins`);
+        alert(`${player} wins`);
       } else {
         alert("Tie");
       }
@@ -73,22 +66,23 @@ class Cell extends Component {
         color: "#f00",
         count: 0,
         playing: false,
-        board: ["", "", "", "", "", "", "", "", ""],
         player: "Red"
       })
     } 
   }
 
   validation = (num1, num2, num3) => {
-    return this.state.board[num1] &&
-           this.state.board[num1] === this.state.board[num2] &&
-           this.state.board[num2] === this.state.board[num3]
+    let board = this.state.board;
+    return board[num1] &&
+           board[num1] === board[num2] &&
+           board[num2] === board[num3]
   }
   
   conditions = () => {
-    return (this.validation(0, 1, 2) || this.validation(3, 4, 5) || this.validation(6, 7, 8) ||
-            this.validation(0, 3, 6) || this.validation(1, 4, 7) || this.validation(2, 5, 8) ||
-            this.validation(0, 4, 8) || this.validation(2, 4, 6)                   
+    let val = this.validation;
+    return (val(0, 1, 2) || val(3, 4, 5) || val(6, 7, 8) ||
+            val(0, 3, 6) || val(1, 4, 7) || val(2, 5, 8) ||
+            val(0, 4, 8) || val(2, 4, 6)                   
     );
   }
 
@@ -97,11 +91,9 @@ class Cell extends Component {
   }
 
   restart = () => {
-    for (let i = 0; i < 9; i++) {
-      document.getElementById(i).style.backgroundColor = "";
-    }
     this.setState({ 
-      playing: true 
+      playing: true,
+      board: ["", "", "", "", "", "", "", "", ""]
     })
   }
 
@@ -109,11 +101,7 @@ class Cell extends Component {
     return (
       <div>
         <Content>
-          {
-            this.state.board.map((num, i) => {
-              return <Square key={i} id={i} changeColor={ this.changeColor }/>
-            })
-          }
+          { this.state.board.map((num, i) => <Square key={i} id={i} color={num} changeColor={ this.changeColor }/>) }
         </Content>  
         <br/>
         <p>

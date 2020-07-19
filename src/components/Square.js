@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 const Col = styled.div`
@@ -9,28 +9,15 @@ const Col = styled.div`
   cursor: pointer;
 `;
 
-class Square extends Component {
-  state = {
-    color: ""
-  }
-
-  render() {
-    console.log(this.props.id)
-    if (this.props.id + 1 % 3 !== 0) {
-      return (
-        <div>
-          <Col id={ this.props.id } onClick={ this.props.changeColor }></Col>
-          
-        </div>
-      );
-    } else {
-      return (
-        <div>
-          <Col id={ this.props.id } onClick={ this.props.changeColor }></Col>
-        </div>
-      );
-    }
-  }
+const Square = ({ id, color, changeColor }) => {  
+  return (
+    <div>
+      <Col id={ id }
+           style={{ backgroundColor: color }} 
+           onClick={ changeColor }>
+      </Col>          
+    </div>
+  );
 }
 
-export default Square;
+export { Col, Square }
