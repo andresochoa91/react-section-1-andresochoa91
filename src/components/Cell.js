@@ -1,73 +1,109 @@
-import React, { Component } from 'react';
 import styled from "styled-components";
-import { Square, Col} from './Square';
+import React, { Component } from 'react';
+import { Square } from './Square';
 
 //Styled components
 
-const Content= styled.div`
-  ${Col}:hover {
-    background-color: #ccc;
-  }
+const Board = styled.div`
   display: flex;
-  flex-wrap: wrap;
-  width: 150px; 
+  justify-content: center;
+  text-align: center;
 `;
 
-const Button = styled.button`
-  background-color: ${(props) => props.primary};
+const Content= styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  width: 216px;
+`;
+
+const Button = styled.button` 
+  padding: 5px 15px;
+  margin: 30px auto;
+  font-size: 20px;
+  background-color: #3c9;
+  color: #fff;
   border: none;
   border-radius: 5px;
-  width: 80px;
-  height: 30px;
+  :hover {
+    background-color: #1a7;
+  }
+`;
+
+const Players = styled.div``;
+const Buttons = styled.div``;
+
+const Body = styled.div`
+  ${Players}, ${Buttons} {
+    display: flex;
+    justify-content: space-around;
+  }
+`;
+
+const Paragraph = styled.p`
+  font-size: 25px;
+  border: ${(props) => props.primary} solid 1px;
+  border-radius: 5px;
+  color: ${(props) => props.primary};
+  padding: 2px 15px;
+`;
+
+const Banner = styled.div`
+  background-color: ${props => props.color};
+  color: #fff;
+  text-align: center;
+  border-radius: 10px;
+  width: 100px;
+  margin: auto;
+  padding: auto 5px;
 `;
 
 class Cell extends Component {
   state = {
-    color: "#f00",
+    color: "#6af",
     count: 0,
     playing: true,
     board: ["", "", "", "", "", "", "", "", ""],
-    player: "Red",
+    player: this.props.player1,
+    winner: ""
   }
   
   changeColor = (event) => {
-
-    const { color, playing, board } = this.state;
+    const { player1, player2 } = this.props;
+    const { color, playing, board, count } = this.state;
 
     if (!board[event.target.id] && playing === true) {    
       const newBoard = [...board];
       newBoard[event.target.id] = color;
       this.setState({ board: newBoard });
 
-      if (color === "#f00") {
+      if (color === "#6af") {
         this.setState({ 
-          color: "#0f0",
-          player: "Red" 
+          color: "#f6c",
+          player: player1,
         })  
       } else {
         this.setState({ 
-          color: "#f00",
-          player: "Green"
+          color: "#6af",
+          player: player2,
         })
       }
-      this.setState({ count: this.state.count + 1 });
+      this.setState({ count: count + 1 });
     }
   }
 
   componentDidUpdate () {
-    const { count, playing, player} = this.state;
+    const { count, playing, player, player1 } = this.state;
     if ((this.conditions() || count === 9) && playing === true) {
+      this.setState({
+        playing: false,
+        player: player1
+      })
       if (this.conditions()) {
         alert(`${player} wins`);
+        this.setState({ winner: player })
       } else {
         alert("Tie");
       }
-      this.setState({
-        color: "#f00",
-        count: 0,
-        playing: false,
-        player: "Red"
-      })
     } 
   }
 
@@ -93,21 +129,40 @@ class Cell extends Component {
   restart = () => {
     this.setState({ 
       playing: true,
-      board: ["", "", "", "", "", "", "", "", ""]
+      board: ["", "", "", "", "", "", "", "", ""],
+      color: "#6af",
+      count: 0,
+      winner: ""
     })
   }
 
   render() {
+    const { winner, count, color, playing, board } = this.state;
+    const { player1, player2, onClickNewGameButton } = this.props;
     return (
-      <div>
-        <Content>
-          { this.state.board.map((num, i) => <Square key={i} id={i} color={num} changeColor={ this.changeColor }/>) }
-        </Content>  
-        <br/>
-        <p>
-          <Button primary={this.state.color} onClick={this.restart}>Restart</Button>
-        </p>
-      </div>
+      <Body>
+        { winner && <Banner color="#1a7">{winner} wins</Banner>}
+        { (!winner && count === 9) && <Banner color="#e69500">Tie</Banner>}
+        <Players>
+          <div>
+            <Paragraph primary="#6af">{ player1 }</Paragraph>
+            { (color === "#6af" && playing) && <Banner color="#e69500">Your turn</Banner> }
+          </div>
+          <div>
+            <Paragraph primary="#f6c">{ player2 }</Paragraph>
+            { (color !== "#6af" && playing) && <Banner color="#e69500">Your turn</Banner> }
+          </div>
+        </Players>
+        <Board>
+          <Content>
+            { board.map((num, i) => <Square key={i} id={i} color={num} changeColor={ this.changeColor }/>) }
+          </Content>  
+        </Board>
+        <Buttons>
+          <Button onClick={this.restart}>Restart</Button>
+          <Button onClick={onClickNewGameButton}>New Game</Button>
+        </Buttons>
+      </Body>
     )
   }
 }
