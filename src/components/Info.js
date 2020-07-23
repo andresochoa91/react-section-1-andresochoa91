@@ -38,10 +38,10 @@ const Contain = styled.div`
 const Info = ({ onClickStartButton, handleInput }) => {
   return (
     <Contain>
-      <form onChange={ handleInput } onKeyPress={(event) => { 
+      <form onChange={ handleInput } onKeyPress={ (event) => { 
         if (event.key === "Enter") {
           onClickStartButton(); 
-        }}} 
+        }} } 
       >
         <label style={{ backgroundColor: "#6af" }} htmlFor="player1">Player 1</label>
         <input maxLength={12} type="text" id="player1"/>
