@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 const Button = styled.button`
@@ -35,21 +35,23 @@ const Contain = styled.div`
   }
 `;
 
-class Info extends Component {
-
-  render() {
-    const { onKeyUpInput, onClickStartButton } = this.props;
-    return (
-      <Contain>
-        <label style={{backgroundColor: "#6af"}} htmlFor="player1">Player 1</label>
-        <input maxLength={12} onKeyUp={onKeyUpInput} type="text" id="player1"/>
+const Info = ({ onClickStartButton, handleInput }) => {
+  return (
+    <Contain>
+      <form onChange={ handleInput } onKeyPress={(event) => { 
+        if (event.key === "Enter") {
+          onClickStartButton(); 
+        }}} 
+      >
+        <label style={{ backgroundColor: "#6af" }} htmlFor="player1">Player 1</label>
+        <input maxLength={12} type="text" id="player1"/>
         <br/>
-        <label style={{backgroundColor: "#f6c"}} htmlFor="player2">Player 2</label>
-        <input maxLength={12} onKeyUp={onKeyUpInput} type="text" id="player2"/>
-        <Button onClick={onClickStartButton}>Start playing</Button>
-      </Contain>
-    )
-  }
+        <label style={{ backgroundColor: "#f6c" }} htmlFor="player2">Player 2</label>
+        <input maxLength={12} type="text" id="player2"/>
+        <Button onClick={ onClickStartButton }>Start playing</Button>
+      </form>
+    </Contain>
+  )
 } 
 
 export default Info;

@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
-// import { Jumbotron } from 'react-bootstrap';
 import styled from 'styled-components';
 import Cell from './components/Cell';
 import Info from './components/Info';
-
+import tictactoebg from './tictactoebg.png';
 
 const Background = styled.div`
-  background: url("https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fsuperchlorine.com%2Fwp-content%2Fuploads%2F2012%2F08%2Ftic-tac-toe_featured.png&f=1&nofb=1") no-repeat center center/contain;
-  height: 250px;
+  background: url(${tictactoebg}) no-repeat center center/contain;
+  height: 210px;
 `;
 
 const Title = styled.h1``;
@@ -46,18 +45,31 @@ class App extends Component {
   }
 
   onKeyUpInput = (event) => {
-    const { value, id } = event.target;
-    if (id === "player1") {
-      this.setState({ player1: value });
+    if (event.key !== "Enter") {
+      const { value, id } = event.target;
+      if (id === "player1") {
+        this.setState({ player1: value });
+      } else {
+        this.setState({ player2: value });
+      }
     } else {
-      this.setState({ player2: value });
+      this.onClickStartButton();
     }
   }
+
+  handleInput = (e) => {
+    if (e.target.id === "player1") {
+      this.setState({ player1: e.target.value }) 
+    } else if (e.target.id === "player2") {
+      this.setState({ player2: e.target.value }) 
+    }
+  } 
 
   onClickStartButton = () => {
     const { player1, player2 } = this.state;
     if (player1 && player2) {
       this.setState({ readyToPlay: true });
+      console.log(this.state.player1, this.state.player2)
     } else {
       alert("You must have 2 players to start the game!");
     }
@@ -82,16 +94,19 @@ class App extends Component {
           start === false ? 
           <div>
             <Paragraph>This is a simple Tic Tac Toe game.</Paragraph>
-            <Button onClick={this.startButton}>START</Button>
+            <Button onClick={ this.startButton }>START</Button>
           </div> :
-            readyToPlay === false ?
-            <Info onKeyUpInput={this.onKeyUpInput}
-                  onClickStartButton={this.onClickStartButton} 
-            /> :
-              <Cell onClickNewGameButton={this.onClickNewGameButton}
-                    player1={player1}      
-                    player2={player2}      
-              />
+          
+          readyToPlay === false ?
+          <Info onKeyUpInput={ this.onKeyUpInput }
+                onClickStartButton={ this.onClickStartButton } 
+                handleInput = { this.handleInput }
+          /> :
+          
+          <Cell onClickNewGameButton={ this.onClickNewGameButton }
+                player1={ player1 }      
+                player2={ player2 }      
+          />
         }
       </Body>
     );

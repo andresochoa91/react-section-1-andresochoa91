@@ -41,7 +41,7 @@ const Body = styled.div`
 
 const Paragraph = styled.p`
   font-size: 25px;
-  border: ${(props) => props.primary} solid 1px;
+  border: ${(props) => props.primary} solid 2px;
   border-radius: 5px;
   color: ${(props) => props.primary};
   padding: 2px 15px;
@@ -69,7 +69,7 @@ class Cell extends Component {
   
   changeColor = (event) => {
     const { player1, player2 } = this.props;
-    const { color, playing, board, count } = this.state;
+    const { color, playing, board } = this.state;
 
     if (!board[event.target.id] && playing === true) {    
       const newBoard = [...board];
@@ -87,7 +87,9 @@ class Cell extends Component {
           player: player2,
         })
       }
-      this.setState({ count: count + 1 });
+      this.setState( prevState => ({
+         count: prevState.count + 1 
+      }));
     }
   }
 
@@ -122,10 +124,6 @@ class Cell extends Component {
     );
   }
 
-  isEven = (number) => {
-    return (number % 2 === 0);
-  }
-
   restart = () => {
     this.setState({ 
       playing: true,
@@ -155,12 +153,17 @@ class Cell extends Component {
         </Players>
         <Board>
           <Content>
-            { board.map((num, i) => <Square key={i} id={i} color={num} changeColor={ this.changeColor }/>) }
+            { board.map((num, i) => <Square key={ i } 
+                                            id={ i } 
+                                            color={ num } 
+                                            changeColor={ this.changeColor }
+                                    />
+            ) }
           </Content>  
         </Board>
         <Buttons>
-          <Button onClick={this.restart}>Restart</Button>
-          <Button onClick={onClickNewGameButton}>New Game</Button>
+          <Button onClick={ this.restart }>Restart</Button>
+          <Button onClick={ onClickNewGameButton }>New Game</Button>
         </Buttons>
       </Body>
     )
